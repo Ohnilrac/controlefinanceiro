@@ -1,4 +1,4 @@
-config.php
+includes/config.php
 .env
 node_modules/
 .DS_Store
