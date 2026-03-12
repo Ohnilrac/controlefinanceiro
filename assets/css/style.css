@@ -143,6 +143,12 @@ body {
   text-align: center;
 }
 
+.alert-success a {
+  color: #f5f5f5;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
 /* ===== LINKS DE AUTH ===== */
 .auth-link {
   text-align: center;
