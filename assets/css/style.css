@@ -816,3 +816,18 @@ textarea:focus {
     gap: 16px;
     align-items: flex-end;
 }
+
+.budget-input {
+    background-color: #0F0F1A;
+    border: 1px solid #2E2E4E;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #F5F5F5;
+    font-size: 14px;
+    width: 150px;
+    outline: none;
+}
+
+.budget-input:focus {
+    border-color: #7C3AED;
+}

@@ -17,7 +17,14 @@ $stmt->execute([':id' => $user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Busca categorias para o orçamento
-$stmt = $pdo->prepare('SELECT * FROM categories WHERE user_id = :user_id ORDER BY name');
+$stmt = $pdo->prepare('
+    SELECT c.*, COALESCE(SUM(e.amount), 0) as total_spent
+    FROM categories c
+    LEFT JOIN expenses e ON c.id = e.category_id
+    WHERE c.user_id = :user_id
+    GROUP BY c.id
+    ORDER BY c.name
+');
 $stmt->execute([':user_id' => $user_id]);
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -90,7 +97,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':id' => $user_id]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    // ATUALIZAR ORÇAMENTO POR CATEGORIA
+    if (isset($_POST['update_budget'])) {
+        $budgets = $_POST['budget'] ?? [];
+        foreach ($budgets as $category_id => $budget_value) {
+            $budget_value = str_replace(['R$ ', '.'], '', $budget_value);
+            $budget_value = str_replace(',', '.', $budget_value);
+            $budget_value = floatval($budget_value);
+            $stmt = $pdo->prepare('UPDATE categories SET budget = :budget WHERE id = :id AND user_id = :user_id');
+            $stmt->execute([':budget' => $budget_value, ':id' => $category_id, ':user_id' => $user_id]);
+        }
+        $success = 'Orçamentos atualizados com sucesso!';
+        
+        // Recarrega categorias
+        $stmt = $pdo->prepare('
+    SELECT c.*, COALESCE(SUM(e.amount), 0) as total_spent
+    FROM categories c
+    LEFT JOIN expenses e ON c.id = e.category_id
+    WHERE c.user_id = :user_id
+    GROUP BY c.id
+    ORDER BY c.name
+');
+$stmt->execute([':user_id' => $user_id]);
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -218,37 +251,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <!-- ORÇAMENTO POR CATEGORIA -->
-        <div class="card" style="margin-bottom: 64px;">
-            <h2 class="card-title">Orçamento por Categoria</h2>
-            <p class="card-description">Defina um limite de gastos para cada categoria.</p>
-            <?php if (empty($categories)): ?>
-                <p class="empty-state">Nenhuma categoria cadastrada. <a href="categories.php" style="color: #7C3AED;">Criar categorias</a></p>
-            <?php else: ?>
-                <table class="table">
-                    <thead>
+<div class="card" style="margin-bottom: 64px;">
+    <h2 class="card-title">Orçamento por Categoria</h2>
+    <p class="card-description">Defina um limite de gastos para cada categoria.</p>
+    <?php if (empty($categories)): ?>
+        <p class="empty-state">Nenhuma categoria cadastrada. <a href="categories.php" style="color: #7C3AED;">Criar categorias</a></p>
+    <?php else: ?>
+        <form action="" method="POST">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Orçamento</th>
+                        <th>Total Gasto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($categories as $category): ?>
                         <tr>
-                            <th>Categoria</th>
-                            <th>Total Gasto</th>
+                            <td>
+                                <span style="margin-right: 8px;"><?php echo $category['icon']; ?></span>
+                                <?php echo htmlspecialchars($category['name']); ?>
+                            </td>
+                            <td>
+                                <input type="text" 
+                                    name="budget[<?php echo $category['id']; ?>]"
+                                    class="budget-input"
+                                    inputmode="numeric"
+                                    placeholder="R$ 0,00"
+                                    value="<?php echo $category['budget'] > 0 ? 'R$ ' . number_format($category['budget'], 2, ',', '.') : ''; ?>">
+                            </td>
+                            <td>
+                                <span class="badge" style="background: <?php echo $category['color']; ?>25; color: <?php echo $category['color']; ?>; border: 1px solid <?php echo $category['color']; ?>50;">
+                                    R$ <?php echo number_format($category['total_spent'], 2, ',', '.'); ?>
+                                </span>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($categories as $category): ?>
-                            <tr>
-                                <td>
-                                    <span style="margin-right: 8px;"><?php echo $category['icon']; ?></span>
-                                    <?php echo htmlspecialchars($category['name']); ?>
-                                </td>
-                                <td>
-                                    <span class="badge" style="background: <?php echo $category['color']; ?>25; color: <?php echo $category['color']; ?>; border: 1px solid <?php echo $category['color']; ?>50;">
-                                        R$ <?php echo number_format(0, 2, ',', '.'); ?>
-                                    </span>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
-        </div>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            <div class="form-actions" style="margin-top: 24px;">
+                <button type="submit" name="update_budget" class="btn-primary btn-small">Salvar Orçamentos</button>
+            </div>
+        </form>
+    <?php endif; ?>
+</div>
 
     </main>
 
@@ -290,6 +337,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         let value = salaryInput.value.replace('R$ ', '').replace(/\./g, '').replace(',', '.');
         salaryInput.value = value;
     });
+
+    // Máscara nos campos de orçamento
+document.querySelectorAll('.budget-input').forEach(function(input) {
+    input.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        value = (parseInt(value) / 100).toFixed(2);
+        this.value = 'R$ ' + value.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    });
+
+    input.addEventListener('keydown', function(e) {
+        const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+        if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
+            e.preventDefault();
+        }
+    });
+});
+
+// Remove máscara antes de enviar
+document.querySelector('form[action=""]').addEventListener('submit', function() {
+    document.querySelectorAll('.budget-input').forEach(function(input) {
+        let value = input.value.replace('R$ ', '').replace(/\./g, '').replace(',', '.');
+        input.value = value;
+    });
+});
 </script>
 </body>
 </html>
