@@ -59,160 +59,173 @@ $monthly_evolution = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body class="dashboard-page">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <span class="logo-icon">💰</span>
-            <span class="logo-text">Controle<br>Financeiro</span>
-        </div>
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
-        <nav class="sidebar-nav">
-            <a href="dashboard.php" class="nav-item active">
-                <span class="nav-icon">🏠</span>
-                <span>Dashboard</span>
-            </a>
-            <a href="expenses.php" class="nav-item">
-                <span class="nav-icon">📋</span>
-                <span>Meus Gastos</span>
-            </a>
-            <a href="categories.php" class="nav-item">
-                <span class="nav-icon">🏷️</span>
-                <span>Categorias</span>
-            </a>
+<!-- TOPBAR MOBILE -->
+<div class="topbar">
+    <button class="hamburger" onclick="openSidebar()">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+</div>
 
-            <div class="nav-divider"></div>
-
-            <a href="settings.php" class="nav-item">
-                <span class="nav-icon">⚙️</span>
-                <span>Configurações</span>
-            </a>
-        </nav>
-
-        <a href="logout.php" class="sidebar-logout">
-            <span>🚪</span>
-            <span>Sair</span>
-        </a>
-    </aside>
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="main-content">
-
-        <!-- HEADER -->
-        <div class="page-header">
-            <div>
-                <h1 class="page-title">Dashboard</h1>
-                <p class="page-subtitle">Bem-vindo, <?php echo htmlspecialchars($user['full_name']); ?>!</p>
+    <div class="content-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <span class="logo-icon">💰</span>
+                <span class="logo-text">Controle<br>Financeiro</span>
             </div>
-        </div>
 
-        <!-- CARDS DE RESUMO -->
-        <div class="summary-cards">
-            <div class="card summary-card">
-                <div class="card-icon" style="background: rgba(124, 58, 237, 0.2);">💰</div>
-                <div class="card-info">
-                    <p class="card-label">Salário Mensal</p>
-                    <p class="card-value">R$ <?php echo number_format($user['salary'], 2, ',', '.'); ?></p>
+            <nav class="sidebar-nav">
+                <a href="dashboard.php" class="nav-item active">
+                    <span class="nav-icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="expenses.php" class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span>Meus Gastos</span>
+                </a>
+                <a href="categories.php" class="nav-item">
+                    <span class="nav-icon">🏷️</span>
+                    <span>Categorias</span>
+                </a>
+
+                <div class="nav-divider"></div>
+
+                <a href="settings.php" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Configurações</span>
+                </a>
+            </nav>
+
+            <a href="logout.php" class="sidebar-logout">
+                <span>🚪</span>
+                <span>Sair</span>
+            </a>
+        </aside>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="main-content">
+
+            <!-- HEADER -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Bem-vindo, <?php echo htmlspecialchars($user['full_name']); ?>!</p>
                 </div>
             </div>
 
-            <div class="card summary-card">
-                <div class="card-icon" style="background: rgba(220, 38, 38, 0.2);">💸</div>
-                <div class="card-info">
-                    <p class="card-label">Total Gasto</p>
-                    <p class="card-value">R$ <?php echo number_format($total_spent, 2, ',', '.'); ?></p>
+            <!-- CARDS DE RESUMO -->
+            <div class="summary-cards">
+                <div class="card summary-card">
+                    <div class="card-icon" style="background: rgba(124, 58, 237, 0.2);">💰</div>
+                    <div class="card-info">
+                        <p class="card-label">Salário Mensal</p>
+                        <p class="card-value">R$ <?php echo number_format($user['salary'], 2, ',', '.'); ?></p>
+                    </div>
+                </div>
+
+                <div class="card summary-card">
+                    <div class="card-icon" style="background: rgba(220, 38, 38, 0.2);">💸</div>
+                    <div class="card-info">
+                        <p class="card-label">Total Gasto</p>
+                        <p class="card-value">R$ <?php echo number_format($total_spent, 2, ',', '.'); ?></p>
+                    </div>
+                </div>
+
+                <div class="card summary-card">
+                    <div class="card-icon" style="background: rgba(16, 185, 129, 0.2);">💵</div>
+                    <div class="card-info">
+                        <p class="card-label">Saldo Restante</p>
+                        <p class="card-value <?php echo $remaining < 0 ? 'text-danger' : 'text-success'; ?>">
+                            R$ <?php echo number_format($remaining, 2, ',', '.'); ?>
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <div class="card summary-card">
-                <div class="card-icon" style="background: rgba(16, 185, 129, 0.2);">💵</div>
-                <div class="card-info">
-                    <p class="card-label">Saldo Restante</p>
-                    <p class="card-value <?php echo $remaining < 0 ? 'text-danger' : 'text-success'; ?>">
-                        R$ <?php echo number_format($remaining, 2, ',', '.'); ?>
-                    </p>
+            <!-- BARRA DE PROGRESSO -->
+            <div class="card progress-card">
+                <div class="progress-header">
+                    <span>Uso do Salário</span>
+                    <span><?php echo $percentage; ?>%</span>
                 </div>
-            </div>
-        </div>
-
-        <!-- BARRA DE PROGRESSO -->
-        <div class="card progress-card">
-            <div class="progress-header">
-                <span>Uso do Salário</span>
-                <span><?php echo $percentage; ?>%</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: <?php echo min($percentage, 100); ?>%; background: <?php echo $percentage > 80 ? '#DC2626' : '#7C3AED'; ?>;"></div>
-            </div>
-            <p class="progress-info">R$ <?php echo number_format($total_spent, 2, ',', '.'); ?> de R$ <?php echo number_format($user['salary'], 2, ',', '.'); ?> utilizados</p>
-        </div>
-
-        <!-- GRÁFICO E CATEGORIAS -->
-        <div class="grid-2">
-
-            <!-- GRÁFICO -->
-            <div class="card">
-                <h2 class="card-title">Evolução de Gastos</h2>
-                <canvas id="expenseChart"></canvas>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: <?php echo min($percentage, 100); ?>%; background: <?php echo $percentage > 80 ? '#DC2626' : '#7C3AED'; ?>;"></div>
+                </div>
+                <p class="progress-info">R$ <?php echo number_format($total_spent, 2, ',', '.'); ?> de R$ <?php echo number_format($user['salary'], 2, ',', '.'); ?> utilizados</p>
             </div>
 
-            <!-- GASTOS POR CATEGORIA -->
-            <div class="card">
-                <h2 class="card-title">Gastos por Categoria</h2>
-                <?php if (empty($expenses_by_category)): ?>
-                    <p class="empty-state">Nenhum gasto registrado este mês.</p>
-                <?php else: ?>
-                    <?php foreach ($expenses_by_category as $category): ?>
-                        <div class="category-item">
-                            <div class="category-info">
-                                <span><?php echo $category['icon']; ?></span>
-                                <span><?php echo htmlspecialchars($category['name']); ?></span>
+            <!-- GRÁFICO E CATEGORIAS -->
+            <div class="grid-2">
+
+                <!-- GRÁFICO -->
+                <div class="card">
+                    <h2 class="card-title">Evolução de Gastos</h2>
+                    <canvas id="expenseChart"></canvas>
+                </div>
+
+                <!-- GASTOS POR CATEGORIA -->
+                <div class="card">
+                    <h2 class="card-title">Gastos por Categoria</h2>
+                    <?php if (empty($expenses_by_category)): ?>
+                        <p class="empty-state">Nenhum gasto registrado este mês.</p>
+                    <?php else: ?>
+                        <?php foreach ($expenses_by_category as $category): ?>
+                            <div class="category-item">
+                                <div class="category-info">
+                                    <span><?php echo $category['icon']; ?></span>
+                                    <span><?php echo htmlspecialchars($category['name']); ?></span>
+                                </div>
+                                <span class="category-value">R$ <?php echo number_format($category['total'], 2, ',', '.'); ?></span>
                             </div>
-                            <span class="category-value">R$ <?php echo number_format($category['total'], 2, ',', '.'); ?></span>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+
+            </div>
+
+            <!-- TRANSAÇÕES RECENTES -->
+            <div class="card last-card">
+                <div class="card-header">
+                    <h2 class="card-title">Transações Recentes</h2>
+                    <a href="expenses.php" class="view-all">Ver todas</a>
+                </div>
+                <?php if (empty($recent_transactions)): ?>
+                    <p class="empty-state">Nenhuma transação registrada.</p>
+                <?php else: ?>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Data</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($recent_transactions as $transaction): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($transaction['name']); ?></td>
+                                    <td>
+                                        <span class="badge" style="background: <?php echo $transaction['color']; ?>30; color: <?php echo $transaction['color']; ?>;">
+                                            <?php echo $transaction['icon']; ?> <?php echo htmlspecialchars($transaction['category_name']); ?>
+                                        </span>
+                                    </td>
+                                    <td><?php echo date('d/m/Y', strtotime($transaction['date'])); ?></td>
+                                    <td class="text-danger">- R$ <?php echo number_format($transaction['amount'], 2, ',', '.'); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 <?php endif; ?>
             </div>
 
-        </div>
-
-        <!-- TRANSAÇÕES RECENTES -->
-        <div class="card last-card">
-            <div class="card-header">
-                <h2 class="card-title">Transações Recentes</h2>
-                <a href="expenses.php" class="view-all">Ver todas</a>
-            </div>
-            <?php if (empty($recent_transactions)): ?>
-                <p class="empty-state">Nenhuma transação registrada.</p>
-            <?php else: ?>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Categoria</th>
-                            <th>Data</th>
-                            <th>Valor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($recent_transactions as $transaction): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($transaction['name']); ?></td>
-                                <td>
-                                    <span class="badge" style="background: <?php echo $transaction['color']; ?>30; color: <?php echo $transaction['color']; ?>;">
-                                        <?php echo $transaction['icon']; ?> <?php echo htmlspecialchars($transaction['category_name']); ?>
-                                    </span>
-                                </td>
-                                <td><?php echo date('d/m/Y', strtotime($transaction['date'])); ?></td>
-                                <td class="text-danger">- R$ <?php echo number_format($transaction['amount'], 2, ',', '.'); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
-        </div>
-
-    </main>
-
+        </main>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const ctx = document.getElementById('expenseChart').getContext('2d');
@@ -248,6 +261,18 @@ $monthly_evolution = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
         });
     </script>
+
+    <script>
+    function openSidebar() {
+        document.querySelector('.sidebar').classList.add('open');
+        document.getElementById('overlay').classList.add('active');
+    }
+
+    function closeSidebar() {
+        document.querySelector('.sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('active');
+    }
+</script>
 
 </body>
 </html>

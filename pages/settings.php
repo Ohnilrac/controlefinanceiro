@@ -137,6 +137,17 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body class="dashboard-page">
 
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="topbar">
+    <button class="hamburger" onclick="openSidebar()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+</div>
+
+<div class="content-wrapper">
+
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-logo">
@@ -250,6 +261,9 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </div>
 
+    </main>
+</div>
+
         <!-- ORÇAMENTO POR CATEGORIA -->
 <div class="card" style="margin-bottom: 64px;">
     <h2 class="card-title">Orçamento por Categoria</h2>
@@ -361,6 +375,17 @@ document.querySelector('form[action=""]').addEventListener('submit', function() 
         input.value = value;
     });
 });
+</script>
+<script>
+    function openSidebar() {
+        document.querySelector('.sidebar').classList.add('open');
+        document.getElementById('overlay').classList.add('active');
+    }
+
+    function closeSidebar() {
+        document.querySelector('.sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('active');
+    }
 </script>
 </body>
 </html>

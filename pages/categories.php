@@ -97,6 +97,17 @@ if (isset($_GET['edit'])) {
 </head>
 <body class="dashboard-page">
 
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="topbar">
+    <button class="hamburger" onclick="openSidebar()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+</div>
+
+<div class="content-wrapper">
+
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-logo">
@@ -178,7 +189,7 @@ if (isset($_GET['edit'])) {
         <?php endif; ?>
 
     </main>
-
+</div>
     <!-- MODAL -->
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
         <div class="modal">
@@ -267,5 +278,16 @@ if (isset($_GET['edit'])) {
 }
     </script>
 
+<script>
+    function openSidebar() {
+        document.querySelector('.sidebar').classList.add('open');
+        document.getElementById('overlay').classList.add('active');
+    }
+
+    function closeSidebar() {
+        document.querySelector('.sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('active');
+    }
+</script>
 </body>
 </html>
