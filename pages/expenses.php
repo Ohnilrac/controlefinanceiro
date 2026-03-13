@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $edit_expense = null;
 if (isset($_GET['edit'])) {
   $stmt = $pdo->prepare('SELECT * FROM expenses WHERE id = :id AND user_id = :user_id');
-  $stmt->execute([':id' => $expense_id, ':user_id' => $user_id]);
+  $stmt->execute([':id' => $_GET['edit'], ':user_id' => $user_id]);
   $edit_expense = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
