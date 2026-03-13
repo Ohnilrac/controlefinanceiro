@@ -19,7 +19,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 //Mes e atual e ano atual para calcular o total gasto no mês
 $month = date('m');
-$year = date('y');
+$year = date('Y');
 
 //Consulta para calcular o total gasto no mês atual
 $stmt = $pdo->prepare('SELECT SUM(amount) AS total FROM expenses WHERE user_id = :user_id AND MONTH(date) = :month AND YEAR(date) = :year');
