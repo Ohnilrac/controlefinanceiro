@@ -9,6 +9,13 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+$stmt = $pdo->prepare('SELECT * FROM users WHERE id = :id');
+$stmt->execute([':id' => $user_id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+$account_year = date('Y', strtotime($user['created_at']));
+$min_year = min($account_year, date('Y') - 2);
+
 //Filtros
 $filter_category = isset($_GET['category']) ? $_GET['category'] : '';
 $filter_month = isset($_GET['month']) ? $_GET['month'] : date('m');
@@ -202,7 +209,7 @@ if (isset($_GET['edit'])) {
                 </select>
 
                 <select name="year" class="filter-select">
-                    <?php for ($y = date('Y'); $y >= date('Y') - 3; $y--): ?>
+                    <?php for ($y = date('Y'); $y >= $min_year; $y--): ?>
                         <option value="<?php echo $y; ?>" <?php echo $filter_year == $y ? 'selected' : ''; ?>>
                             <?php echo $y; ?>
                         </option>
@@ -299,7 +306,7 @@ if (isset($_GET['edit'])) {
 
                 <div class="form-group">
                     <label>Data</label>
-                    <input type="date" name="date" value="<?php echo $edit_expense ? $edit_expense['date'] : date('Y-m-d'); ?>">
+                    <input type="date" name="date" min="<?php echo $min_year; ?>-01-01" max="<?php echo date('Y'); ?>-12-31" value="<?php echo $edit_expense ? $edit_expense['date'] : date('Y-m-d'); ?>">
                 </div>
 
                 <div class="form-group checkbox-group">
