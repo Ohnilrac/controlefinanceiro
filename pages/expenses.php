@@ -300,7 +300,7 @@ if (isset($_GET['edit'])) {
 
                     <div class="form-group">
                         <label>Valor (R$)</label>
-                        <input type="number" name="amount" step="0.01" min="0" placeholder="0,00" value="<?php echo $edit_expense ? $edit_expense['amount'] : ''; ?>">
+                        <input type="text" name="amount" id="amountInput" inputmode="numeric" placeholder="R$0,00" value="<?php echo $edit_expense ? 'R$ ' . number_format($edit_expense['amount'], 2, ',', '.') : 'R$ 0,00' ?>">
                     </div>
                 </div>
 
@@ -337,6 +337,17 @@ if (isset($_GET['edit'])) {
         function closeModal(event) {
             if (!event || event.target === modalOverlay) {
                 modalOverlay.classList.remove('active');
+
+                // limpar o parametro de url se a pessoa saiu do modal de edição sem fazer nada
+                const url = new URL(window.location);
+                url.searchParams.delete('edit');
+                window.history.replaceState({}, '', url);
+
+                // limpar campos do modal
+                document.querySelector('.modal form').reset();
+                document.querySelector('input[name="expense_id"]') && document.querySelector('input[name="expense_id"]').remove();
+                document.querySelector('.modal h2').textContent = 'Adicionar Gasto';
+                amountInput.value = '';
             }
         }
 
@@ -344,6 +355,26 @@ if (isset($_GET['edit'])) {
         <?php if ($edit_expense): ?>
             openModal();
         <?php endif; ?>
+
+        const amountInput = document.getElementById('amountInput');
+
+amountInput.addEventListener('input', function() {
+    let value = this.value.replace(/\D/g, '');
+    value = (parseInt(value) / 100).toFixed(2);
+    this.value = 'R$ ' + value.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+});
+
+amountInput.addEventListener('keydown', function(e) {
+    const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+    if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
+        e.preventDefault();
+    }
+});
+
+amountInput.closest('form').addEventListener('submit', function() {
+    let value = amountInput.value.replace('R$ ', '').replace(/\./g, '').replace(',', '.');
+    amountInput.value = value;
+});
     </script>
 
 </body>
