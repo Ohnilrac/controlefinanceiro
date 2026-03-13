@@ -240,7 +240,7 @@ if (isset($_GET['edit'])) {
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <span class="badge" style="background: <?php echo $expense['color']; ?>20; color: <?php echo $expense['color']; ?>;">
+                                    <span class="badge" style="background: <?php echo $expense['color']; ?>30; color: <?php echo $expense['color']; ?>;">
                                         <?php echo $expense['icon']; ?> <?php echo htmlspecialchars($expense['category_name']); ?>
                                     </span>
                                 </td>

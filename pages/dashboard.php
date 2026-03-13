@@ -198,7 +198,7 @@ $monthly_evolution = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <tr>
                                 <td><?php echo htmlspecialchars($transaction['name']); ?></td>
                                 <td>
-                                    <span class="badge" style="background: <?php echo $transaction['color']; ?>20; color: <?php echo $transaction['color']; ?>;">
+                                    <span class="badge" style="background: <?php echo $transaction['color']; ?>30; color: <?php echo $transaction['color']; ?>;">
                                         <?php echo $transaction['icon']; ?> <?php echo htmlspecialchars($transaction['category_name']); ?>
                                     </span>
                                 </td>
