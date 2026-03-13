@@ -784,3 +784,35 @@ textarea:focus {
 .emoji-option.selected {
   background: rgba(124, 58, 237, 0.4);
 }
+
+
+/* ===== SETTINGS ===== */
+.settings-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+    color: #9090A0;
+    font-size: 13px;
+}
+
+.settings-divider::before,
+.settings-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #2E2E4E;
+}
+
+.card-description {
+    font-size: 14px;
+    color: #9090A0;
+    margin-bottom: 20px;
+    margin-top: -12px;
+}
+
+.salary-form {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+}
