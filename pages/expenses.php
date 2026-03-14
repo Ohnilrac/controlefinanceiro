@@ -227,8 +227,8 @@ if (isset($_GET['edit'])) {
                     <?php endfor; ?>
                 </select>
 
-                <button type="submit" class="btn-secondary">Filtrar</button>
-                <a href="expenses.php" class="btn-secondary">Limpar</a>
+                <button type="submit" class="btn-filter">Filtrar</button>
+                <a href="expenses.php" class="btn-filter">Limpar</a>
             </form>
         </div>
 

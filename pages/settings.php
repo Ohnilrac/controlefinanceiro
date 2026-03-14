@@ -261,17 +261,16 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </div>
 
-    </main>
-</div>
-
         <!-- ORÇAMENTO POR CATEGORIA -->
-<div class="card" style="margin-bottom: 64px;">
-    <h2 class="card-title">Orçamento por Categoria</h2>
-    <p class="card-description">Defina um limite de gastos para cada categoria.</p>
-    <?php if (empty($categories)): ?>
+        <div class="card" style="margin-bottom: 64px;">
+        <h2 class="card-title">Orçamento por Categoria</h2>
+        <p class="card-description">Defina um limite de gastos para cada categoria.</p>
+        <?php if (empty($categories)): ?>
         <p class="empty-state">Nenhuma categoria cadastrada. <a href="categories.php" style="color: #7C3AED;">Criar categorias</a></p>
-    <?php else: ?>
+        <?php else: ?>
         <form action="" method="POST">
+            <div class="budget-table-wrapper">
+                
             <table class="table">
                 <thead>
                     <tr>
@@ -304,14 +303,17 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            
+            </div>
             <div class="form-actions" style="margin-top: 24px;">
                 <button type="submit" name="update_budget" class="btn-primary btn-small">Salvar Orçamentos</button>
             </div>
         </form>
-    <?php endif; ?>
+        <?php endif; ?>
+        </div>
+    </main>
 </div>
 
-    </main>
 
     <script>
     const salaryInput = document.getElementById('salaryInput');
