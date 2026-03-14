@@ -209,14 +209,14 @@ $monthly_evolution = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <tbody>
                             <?php foreach ($recent_transactions as $transaction): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($transaction['name']); ?></td>
-                                    <td>
+                                    <td data-label="Nome"><?php echo htmlspecialchars($transaction['name']); ?></td>
+                                    <td data-label="Categoria">
                                         <span class="badge" style="background: <?php echo $transaction['color']; ?>30; color: <?php echo $transaction['color']; ?>;">
                                             <?php echo $transaction['icon']; ?> <?php echo htmlspecialchars($transaction['category_name']); ?>
                                         </span>
                                     </td>
-                                    <td><?php echo date('d/m/Y', strtotime($transaction['date'])); ?></td>
-                                    <td class="text-danger">- R$ <?php echo number_format($transaction['amount'], 2, ',', '.'); ?></td>
+                                    <td data-label="Data"><?php echo date('d/m/Y', strtotime($transaction['date'])); ?></td>
+                                    <td class="text-danger" data-label="Valor">- R$ <?php echo number_format($transaction['amount'], 2, ',', '.'); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

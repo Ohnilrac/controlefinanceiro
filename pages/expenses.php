@@ -197,6 +197,9 @@ if (isset($_GET['edit'])) {
 
         <!-- FILTROS -->
         <div class="card">
+            <div class="filters-header">
+                <span>🔍 Filtrar gastos</span>
+            </div>
             <form action="" method="GET" class="filters">
                 <input type="text" name="search" placeholder="Buscar gasto..." value="<?php echo htmlspecialchars($search); ?>" class="filter-input">
 
@@ -251,20 +254,20 @@ if (isset($_GET['edit'])) {
                     <tbody>
                         <?php foreach ($expenses as $expense): ?>
                             <tr>
-                                <td>
+                                <td data-label="Nome">
                                     <?php echo htmlspecialchars($expense['name']); ?>
                                     <?php if (!empty($expense['comment'])): ?>
                                         <span class="comment-icon" title="<?php echo htmlspecialchars($expense['comment']); ?>">💬</span>
                                     <?php endif; ?>
                                 </td>
-                                <td>
+                                <td data-label="Categoria">
                                     <span class="badge" style="background: <?php echo $expense['color']; ?>30; color: <?php echo $expense['color']; ?>;">
                                         <?php echo $expense['icon']; ?> <?php echo htmlspecialchars($expense['category_name']); ?>
                                     </span>
                                 </td>
-                                <td><?php echo date('d/m/Y', strtotime($expense['date'])); ?></td>
-                                <td><?php echo $expense['is_recurring'] ? '🔄 Sim' : 'Não'; ?></td>
-                                <td class="text-danger">- R$ <?php echo number_format($expense['amount'], 2, ',', '.'); ?></td>
+                                <td data-label="Data"><?php echo date('d/m/Y', strtotime($expense['date'])); ?></td>
+                                <td data-label="Recorrente"><?php echo $expense['is_recurring'] ? '🔄 Sim' : 'Não'; ?></td>
+                                <td class="text-danger" data-label="Valor">- R$ <?php echo number_format($expense['amount'], 2, ',', '.'); ?></td>
                                 <td class="actions">
                                     <a href="?edit=<?php echo $expense['id']; ?>" class="btn-icon btn-edit">✏️ Editar</a>
                                     <a href="?delete=<?php echo $expense['id']; ?>" class="btn-icon btn-delete" onclick="return confirm('Tem certeza que deseja excluir este gasto?')">🗑️ Excluir</a>

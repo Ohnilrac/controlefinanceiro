@@ -117,22 +117,22 @@ body {
 }
 
 .btn-filter {
-    padding: 10px 20px;
-    background-color: rgba(124, 58, 237, 0.15);
-    color: #7C3AED;
-    border: 1px solid #7C3AED;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-decoration: none;
-    display: inline-block;
+  padding: 10px 20px;
+  background-color: rgba(124, 58, 237, 0.15);
+  color: #7c3aed;
+  border: 1px solid #7c3aed;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .btn-filter:hover {
-    background-color: #7C3AED;
-    color: #F5F5F5;
+  background-color: #7c3aed;
+  color: #f5f5f5;
 }
 
 /* ===== ALERTS ===== */
@@ -188,14 +188,14 @@ body {
 
 /* ===== DASHBOARD ===== */
 .dashboard-page {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .dashboard-page .content-wrapper {
-    display: flex;
-    flex: 1;
+  display: flex;
+  flex: 1;
 }
 
 /* ===== SIDEBAR ===== */
@@ -518,6 +518,10 @@ body {
   flex-wrap: wrap;
 }
 
+.filters-header {
+  display: none;
+}
+
 .filter-input {
   padding: 10px 16px;
   background-color: #0f0f1a;
@@ -603,14 +607,14 @@ body {
 }
 
 .btn-edit {
-  color: #7C3AED;
+  color: #7c3aed;
   background: rgba(124, 58, 237, 0.1);
   border: 1px solid rgba(124, 58, 237, 0.3);
 }
 
 .btn-edit:hover {
   background: rgba(124, 58, 237, 0.25);
-  border-color: #7C3AED;
+  border-color: #7c3aed;
 }
 
 .btn-delete {
@@ -801,7 +805,7 @@ textarea:focus {
 }
 
 .input-error {
-    border-color: #dc2626 !important;
+  border-color: #dc2626 !important;
 }
 
 /* ===== EMOJI GRID ===== */
@@ -885,8 +889,8 @@ textarea:focus {
 
 /* SETTINGS BUDGET TABLE */
 .budget-table-wrapper {
-    overflow-x: auto;
-    width: 100%;
+  overflow-x: auto;
+  width: 100%;
 }
 
 /* ===== RESPONSIVE ===== */
@@ -912,12 +916,12 @@ textarea:focus {
     align-items: center;
     justify-content: flex-end;
     padding: 12px 16px;
-    background-color: #1E1E2E;
-    border-bottom: 1px solid #2E2E4E;
+    background-color: #1e1e2e;
+    border-bottom: 1px solid #2e2e4e;
     position: sticky;
     top: 0;
     z-index: 998;
-}
+  }
 
   .topbar-title {
     font-size: 16px;
@@ -937,10 +941,10 @@ textarea:focus {
     display: block;
     width: 24px;
     height: 2px;
-    background-color: #F5F5F5;
+    background-color: #f5f5f5;
     margin: 5px 0;
     border-radius: 2px;
-}
+  }
 
   .overlay {
     display: none;
@@ -987,35 +991,73 @@ textarea:focus {
     width: 100%;
   }
 
-  /* TABLE */
-  .table thead {
-    display: none;
+  .filters-header {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #9090a0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #2e2e4e;
   }
 
-  .table tr {
+  /* TABLE */
+.table thead {
+    display: none;
+}
+
+.table tr {
     display: block;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     border: 1px solid #2e2e4e;
     border-radius: 8px;
-    padding: 12px;
-  }
+    padding: 12px 16px;
+}
 
-  .table td {
+.table td {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 0;
+    padding: 8px 0;
     border: none;
+    border-bottom: 1px solid #2e2e4e10;
     font-size: 13px;
-  }
+}
 
-  .table td::before {
+.table td:last-child {
+    border-bottom: none;
+}
+
+.table td::before {
     content: attr(data-label);
     font-weight: 600;
     color: #9090a0;
     font-size: 11px;
     text-transform: uppercase;
-  }
+    flex-shrink: 0;
+    margin-right: 12px;
+}
+
+.table td.actions {
+    justify-content: center;
+    gap: 12px;
+    padding-top: 12px;
+    margin-top: 4px;
+    border-top: 1px solid #2e2e4e;
+}
+
+.table td.actions::before {
+    display: none;
+}
+
+.table td.actions .btn-icon {
+    flex: 1;
+    justify-content: center;
+}
+
 
   /* MODAL */
   .modal {
@@ -1053,17 +1095,14 @@ textarea:focus {
 
   .budget-table-wrapper {
     margin: 0 -8px;
-}
+  }
 
-.budget-input {
+  .budget-input {
     width: 120px;
-}
+  }
 
-.btn-filter {
+  .btn-filter {
     width: 100%;
     text-align: center;
+  }
 }
-}
-
-
-
