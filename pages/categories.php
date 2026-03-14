@@ -175,14 +175,15 @@ if (isset($_GET['edit'])) {
                             <div class="category-card-icon" style="background: <?php echo $category['color']; ?>20;">
                                 <?php echo $category['icon']; ?>
                             </div>
-                            <div class="category-card-actions">
-                                <a href="?edit=<?php echo $category['id']; ?>" class="btn-icon btn-edit">✏️</a>
-                                <a href="?delete=<?php echo $category['id']; ?>" class="btn-icon btn-delete" onclick="return confirm('Tem certeza que deseja excluir esta categoria?')">🗑️</a>
-                            </div>
                         </div>
-                        <h3 class="category-card-name"><?php echo htmlspecialchars($category['name']); ?></h3>
-                        <p class="category-card-total">R$ <?php echo number_format($category['total_spent'], 2, ',', '.'); ?></p>
-                        <p class="category-card-count"><?php echo $category['total_expenses']; ?> gasto(s)</p>
+                            <h3 class="category-card-name"><?php echo htmlspecialchars($category['name']); ?></h3>
+                            <p class="category-card-total">R$ <?php echo number_format($category['total_spent'], 2, ',', '.'); ?></p>
+                            <p class="category-card-count"><?php echo $category['total_expenses']; ?> gasto(s)</p>
+
+                            <div class="category-card-actions">
+                                <a href="?edit=<?php echo $category['id']; ?>" class="btn-icon btn-edit">✏️ Editar</a>
+                                <a href="?delete=<?php echo $category['id']; ?>" class="btn-icon btn-delete" onclick="return confirm('Tem certeza que deseja excluir esta categoria?')">🗑️ Excluir</a>
+                            </div>
                     </div>
                 <?php endforeach; ?>
             </div>

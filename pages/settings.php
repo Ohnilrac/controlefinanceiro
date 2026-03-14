@@ -295,8 +295,9 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     value="<?php echo $category['budget'] > 0 ? 'R$ ' . number_format($category['budget'], 2, ',', '.') : ''; ?>">
                             </td>
                             <td>
-                                <span class="badge" style="background: <?php echo $category['color']; ?>25; color: <?php echo $category['color']; ?>; border: 1px solid <?php echo $category['color']; ?>50;">
-                                    R$ <?php echo number_format($category['total_spent'], 2, ',', '.'); ?>
+                            <?php $over_budget = $category['budget'] > 0 && $category['total_spent'] > $category['budget'];?>
+                                <span class="badge" style="<?php echo $over_budget ? 'background: rgba(220,38,38,0.15); color: #dc2626; border: 1px solid rgba(220,38,38,0.4);' : 'background: ' . $category['color'] . '25; color: ' . $category['color'] . '; border: 1px solid ' . $category['color'] . '50;'; ?>">
+                                    <?php echo $over_budget ? '⚠️ ' : ''; ?>R$ <?php echo number_format($category['total_spent'], 2, ',', '.'); ?>
                                 </span>
                             </td>
                         </tr>

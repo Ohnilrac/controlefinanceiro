@@ -266,8 +266,8 @@ if (isset($_GET['edit'])) {
                                 <td><?php echo $expense['is_recurring'] ? '🔄 Sim' : 'Não'; ?></td>
                                 <td class="text-danger">- R$ <?php echo number_format($expense['amount'], 2, ',', '.'); ?></td>
                                 <td class="actions">
-                                    <a href="?edit=<?php echo $expense['id']; ?>" class="btn-icon btn-edit">✏️</a>
-                                    <a href="?delete=<?php echo $expense['id']; ?>" class="btn-icon btn-delete" onclick="return confirm('Tem certeza que deseja excluir este gasto?')">🗑️</a>
+                                    <a href="?edit=<?php echo $expense['id']; ?>" class="btn-icon btn-edit">✏️ Editar</a>
+                                    <a href="?delete=<?php echo $expense['id']; ?>" class="btn-icon btn-delete" onclick="return confirm('Tem certeza que deseja excluir este gasto?')">🗑️ Excluir</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
