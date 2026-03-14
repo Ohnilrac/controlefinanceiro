@@ -11,6 +11,7 @@ if (isset($_SESSION['user_id'])) {
 
 $error = '';
 $success = '';
+$error_fields = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   //trim é uma função que remove os espaços em branco do início e do final de uma string
@@ -30,8 +31,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   } else {
     $stmt = $pdo->prepare('SELECT * FROM users WHERE email = :email OR username = :username');
     $stmt->execute([':email' => $email, ':username' => $username]);
-    if ($stmt->fetch(PDO::FETCH_ASSOC)) {
-      $error = 'Email ou nome de usuário já estão em uso.';
+    $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($existing) {
+        // Verifica qual campo está duplicado
+        $stmt_email = $pdo->prepare('SELECT id FROM users WHERE email = :email');
+        $stmt_email->execute([':email' => $email]);
+        $stmt_username = $pdo->prepare('SELECT id FROM users WHERE username = :username');
+        $stmt_username->execute([':username' => $username]);
+        
+        $email_exists = $stmt_email->fetch();
+        $username_exists = $stmt_username->fetch();
+        
+        if ($email_exists && $username_exists) {
+            $error = 'Email e nome de usuário já estão em uso.';
+            $error_fields = ['email', 'username'];
+        } elseif ($email_exists) {
+            $error = 'Este email já está em uso.';
+            $error_fields = ['email'];
+        } else {
+            $error = 'Este nome de usuário já está em uso.';
+            $error_fields = ['username'];
+        }
     } else {
       // PASSWORD_DEFAULT é uma constante que indica o algoritmo de hash a ser usado, atualmente é o bcrypt, e pode ser atualizado no futuro para um algoritmo mais forte sem precisar alterar o código
       $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -77,22 +97,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="alert alert-success">
                     <?php echo $success; ?>
                 </div>
-            <?php endif; ?>
+                <a href="login.php" class="btn-primary" style="text-align: center; display: block; text-decoration: none; margin-top: 8px;">Fazer login</a>
+            <?php else: ?>
 
             <form action="" method="POST">
                 <div class="form-group">
                     <label for="full_name">Nome completo</label>
-                    <input type="text" id="full_name" name="full_name" placeholder="Digite seu nome completo">
+                    <input type="text" id="full_name" name="full_name" placeholder="Digite seu nome completo" value="<?php echo htmlspecialchars($_POST['full_name'] ?? ''); ?>">
                 </div>
 
                 <div class="form-group">
                     <label for="username">Nome de usuário</label>
-                    <input type="text" id="username" name="username" placeholder="Digite seu nome de usuário">
+                    <input type="text" id="username" name="username" class="<?php echo in_array('username', $error_fields) ? 'input-error' : ''; ?>" placeholder="Digite seu nome de usuário" value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>">
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Digite seu email">
+                    <input type="email" id="email" name="email" class="<?php echo in_array('email', $error_fields) ? 'input-error' : ''; ?>" placeholder = "Digite seu email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>">
                 </div>
 
                 <div class="form-group">
@@ -107,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <button type="submit" class="btn-primary">Cadastrar</button>
             </form>
-
+            <?php endif; ?>
             <p class="auth-link">Já tem uma conta? <a href="login.php">Faça login</a></p>
 
         </div>

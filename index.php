@@ -1,14 +1,10 @@
 <?php
-require_once 'includes/config.php';
+session_start();
 
-try {
-    $pdo = new PDO(
-        'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8',
-        DB_USER,
-        DB_PASS
-    );
-    echo "Conexão bem sucedida!";
-} catch (PDOException $e) {
-    echo "Erro: " . $e->getMessage();
-}
+if (isset($_SESSION['user_id'])) {
+    header("Location: ./pages/dashboard.php");
+} else {
+    header("Location: ./pages/login.php");
+    }
+exit();
 ?>
