@@ -633,6 +633,18 @@ body {
   cursor: help;
 }
 
+.expense-name {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.expense-comment {
+    font-size: 12px;
+    color: #9090a0;
+    font-style: italic;
+}
+
 /* ===== MODAL ===== */
 .modal-overlay {
   display: none;
@@ -1020,7 +1032,7 @@ textarea:focus {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
     padding: 8px 0;
     border: none;
     border-bottom: 1px solid #2e2e4e10;
@@ -1105,4 +1117,12 @@ textarea:focus {
     width: 100%;
     text-align: center;
   }
+
+  .expense-name {
+    align-items: flex-end;
+}
+
+.expense-comment {
+    text-align: right;
+}
 }

@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $amount = trim($_POST['amount'] ?? '');
   $date = trim($_POST['date'] ?? '');
   $is_recurring = isset($_POST['is_recurring']) ? 1 : 0;
-  $comment = trim($_POST['comments'] ?? '');
+  $comment = trim($_POST['comment'] ?? '');
 
   if (empty($name) || empty($amount) || empty($category_id) || empty($date)) {
     $action_error = 'Por favor, preencha todos os campos obrigatórios.';
@@ -255,11 +255,13 @@ if (isset($_GET['edit'])) {
                         <?php foreach ($expenses as $expense): ?>
                             <tr>
                                 <td data-label="Nome">
+                                <div class="expense-name">
                                     <?php echo htmlspecialchars($expense['name']); ?>
                                     <?php if (!empty($expense['comment'])): ?>
-                                        <span class="comment-icon" title="<?php echo htmlspecialchars($expense['comment']); ?>">💬</span>
+                                        <span class="expense-comment"><?php echo htmlspecialchars($expense['comment']); ?></span>
                                     <?php endif; ?>
-                                </td>
+                                </div>
+                            </td>
                                 <td data-label="Categoria">
                                     <span class="badge" style="background: <?php echo $expense['color']; ?>30; color: <?php echo $expense['color']; ?>;">
                                         <?php echo $expense['icon']; ?> <?php echo htmlspecialchars($expense['category_name']); ?>
