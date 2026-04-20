@@ -11,65 +11,11 @@
  *  - $edit_category (array|null)
  */
 require_once __DIR__ . '/categories.logic.php';
+
+$page_title  = 'Categorias';
+$active_page = 'categories';
+include __DIR__ . '/../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categorias - Controle Financeiro</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-</head>
-<body class="dashboard-page">
-
-<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
-<div class="topbar">
-    <button class="hamburger" onclick="openSidebar()">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-</div>
-
-<div class="content-wrapper">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <span class="logo-icon">💰</span>
-            <span class="logo-text">Controle<br>Financeiro</span>
-        </div>
-
-        <nav class="sidebar-nav">
-            <a href="dashboard.php" class="nav-item">
-                <span class="nav-icon">🏠</span>
-                <span>Dashboard</span>
-            </a>
-            <a href="expenses.php" class="nav-item">
-                <span class="nav-icon">📋</span>
-                <span>Meus Gastos</span>
-            </a>
-            <a href="categories.php" class="nav-item active">
-                <span class="nav-icon">🏷️</span>
-                <span>Categorias</span>
-            </a>
-
-            <div class="nav-divider"></div>
-
-            <a href="settings.php" class="nav-item">
-                <span class="nav-icon">⚙️</span>
-                <span>Configurações</span>
-            </a>
-        </nav>
-
-        <a href="logout.php" class="sidebar-logout">
-            <span>🚪</span>
-            <span>Sair</span>
-        </a>
-    </aside>
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="main-content">
 
         <div class="page-header">
             <div>
@@ -180,40 +126,10 @@ require_once __DIR__ . '/categories.logic.php';
         </div>
     </div>
 
+    <!-- Flag passada do PHP para o JS (indica se o modal abre em modo edicao) -->
     <script>
-        const modalOverlay = document.getElementById('modalOverlay');
-
-        function openModal() {
-            modalOverlay.classList.add('active');
-        }
-
-        function closeModal(event) {
-            if (!event || event.target === modalOverlay) {
-                modalOverlay.classList.remove('active');
-            }
-        }
-
-        <?php if ($edit_category): ?>
-            openModal();
-        <?php endif; ?>
-
-        function selectEmoji(emoji) {
-    document.getElementById('iconInput').value = emoji;
-    document.querySelectorAll('.emoji-option').forEach(el => el.classList.remove('selected'));
-    event.target.classList.add('selected');
-}
+        const CATEGORY_EDIT_MODE = <?php echo $edit_category ? 'true' : 'false'; ?>;
     </script>
+    <script src="../assets/js/categories.js"></script>
 
-<script>
-    function openSidebar() {
-        document.querySelector('.sidebar').classList.add('open');
-        document.getElementById('overlay').classList.add('active');
-    }
-
-    function closeSidebar() {
-        document.querySelector('.sidebar').classList.remove('open');
-        document.getElementById('overlay').classList.remove('active');
-    }
-</script>
-</body>
-</html>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

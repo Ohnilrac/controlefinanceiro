@@ -10,67 +10,11 @@
  *    $expenses_by_category, $recent_transactions, $monthly_evolution
  */
 require_once __DIR__ . '/dashboard.logic.php';
+
+$page_title  = 'Dashboard';
+$active_page = 'dashboard';
+include __DIR__ . '/../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Controle Financeiro</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-</head>
-<body class="dashboard-page">
-
-<!-- OVERLAY -->
-<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
-
-<!-- TOPBAR MOBILE -->
-<div class="topbar">
-    <button class="hamburger" onclick="openSidebar()">
-    <span></span>
-    <span></span>
-    <span></span>
-</button>
-</div>
-
-    <div class="content-wrapper">
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <div class="sidebar-logo">
-                <span class="logo-icon">💰</span>
-                <span class="logo-text">Controle<br>Financeiro</span>
-            </div>
-
-            <nav class="sidebar-nav">
-                <a href="dashboard.php" class="nav-item active">
-                    <span class="nav-icon">🏠</span>
-                    <span>Dashboard</span>
-                </a>
-                <a href="expenses.php" class="nav-item">
-                    <span class="nav-icon">📋</span>
-                    <span>Meus Gastos</span>
-                </a>
-                <a href="categories.php" class="nav-item">
-                    <span class="nav-icon">🏷️</span>
-                    <span>Categorias</span>
-                </a>
-
-                <div class="nav-divider"></div>
-
-                <a href="settings.php" class="nav-item">
-                    <span class="nav-icon">⚙️</span>
-                    <span>Configurações</span>
-                </a>
-            </nav>
-
-            <a href="logout.php" class="sidebar-logout">
-                <span>🚪</span>
-                <span>Sair</span>
-            </a>
-        </aside>
-
-        <!-- CONTEÚDO PRINCIPAL -->
-        <main class="main-content">
 
             <!-- HEADER -->
             <div class="page-header">
@@ -188,53 +132,15 @@ require_once __DIR__ . '/dashboard.logic.php';
 
         </main>
     </div>
+    <!-- Dependencia do grafico (Chart.js via CDN) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Dados do grafico vindos do PHP (consumidos pelo dashboard.js) -->
     <script>
-        const ctx = document.getElementById('expenseChart').getContext('2d');
-        const monthlyData = <?php echo json_encode($monthly_evolution); ?>;
-
-        const labels = monthlyData.map(item => {
-            const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-            return months[item.month - 1];
-        });
-
-        const data = monthlyData.map(item => item.total);
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Gastos',
-                    data: data,
-                    backgroundColor: '#7C3AED',
-                    borderRadius: 8,
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    x: { grid: { color: '#2E2E4E' }, ticks: { color: '#9090A0' } },
-                    y: { grid: { color: '#2E2E4E' }, ticks: { color: '#9090A0' } }
-                }
-            }
-        });
+        const DASHBOARD_DATA = {
+            monthlyEvolution: <?php echo json_encode($monthly_evolution); ?>
+        };
     </script>
+    <script src="../assets/js/dashboard.js"></script>
 
-    <script>
-    function openSidebar() {
-        document.querySelector('.sidebar').classList.add('open');
-        document.getElementById('overlay').classList.add('active');
-    }
-
-    function closeSidebar() {
-        document.querySelector('.sidebar').classList.remove('open');
-        document.getElementById('overlay').classList.remove('active');
-    }
-</script>
-
-</body>
-</html>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

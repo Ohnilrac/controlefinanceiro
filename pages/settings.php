@@ -11,66 +11,11 @@
  *  - $error, $success (string)
  */
 require_once __DIR__ . '/settings.logic.php';
+
+$page_title  = 'Configurações';
+$active_page = 'settings';
+include __DIR__ . '/../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurações - Controle Financeiro</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-</head>
-
-<body class="dashboard-page">
-
-<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
-<div class="topbar">
-    <button class="hamburger" onclick="openSidebar()">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-</div>
-
-<div class="content-wrapper">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <span class="logo-icon">💰</span>
-            <span class="logo-text">Controle<br>Financeiro</span>
-        </div>
-
-        <nav class="sidebar-nav">
-            <a href="dashboard.php" class="nav-item">
-                <span class="nav-icon">🏠</span>
-                <span>Dashboard</span>
-            </a>
-            <a href="expenses.php" class="nav-item">
-                <span class="nav-icon">📋</span>
-                <span>Meus Gastos</span>
-            </a>
-            <a href="categories.php" class="nav-item">
-                <span class="nav-icon">🏷️</span>
-                <span>Categorias</span>
-            </a>
-
-            <div class="nav-divider"></div>
-
-            <a href="settings.php" class="nav-item active">
-                <span class="nav-icon">⚙️</span>
-                <span>Configurações</span>
-            </a>
-        </nav>
-
-        <a href="logout.php" class="sidebar-logout">
-            <span>🚪</span>
-            <span>Sair</span>
-        </a>
-    </aside>
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="main-content">
 
         <div class="page-header">
             <div>
@@ -140,7 +85,7 @@ require_once __DIR__ . '/settings.logic.php';
             <form action="" method="POST">
                 <div class="salary-form">
                     <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                        <input type="text" name="salary" id="salaryInput" inputmode="numeric" placeholder="R$ 0,00" value="R$ <?php echo number_format($user['salary'], 2, ',', '.'); ?>">
+                        <input type="text" name="salary" id="salaryInput" class="money-input" inputmode="numeric" placeholder="R$ 0,00" value="R$ <?php echo number_format($user['salary'], 2, ',', '.'); ?>">
                     </div>
                     <button type="submit" name="update_salary" class="btn-primary btn-small">Atualizar</button>
                 </div>
@@ -175,7 +120,7 @@ require_once __DIR__ . '/settings.logic.php';
                             <td>
                                 <input type="text"
                                     name="budget[<?php echo $category['id']; ?>]"
-                                    class="budget-input"
+                                    class="budget-input money-input"
                                     inputmode="numeric"
                                     placeholder="R$ 0,00"
                                     value="<?php echo $category['budget'] > 0 ? 'R$ ' . number_format($category['budget'], 2, ',', '.') : ''; ?>">
@@ -202,79 +147,5 @@ require_once __DIR__ . '/settings.logic.php';
 </div>
 
 
-    <script>
-    const salaryInput = document.getElementById('salaryInput');
-
-    // Formata o salário
-    salaryInput.addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        value = (parseInt(value) / 100).toFixed(2);
-        this.value = 'R$ ' + value.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    });
-
-    // Remove a mascara quando o campo recebe o foco
-    salaryInput.addEventListener('focus', function() {
-        if (this.value === 'R$ 0,00') {
-            this.value = '';
-        }
-    });
-
-
-    // Formata o valor inicial
-    if (salaryInput.value && salaryInput.value !== 'R$ 0,00') {
-        let value = salaryInput.value.replace(/\D/g, '');
-        value = (parseInt(value) / 100).toFixed(2);
-        salaryInput.value = 'R$ ' + value.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    }
-
-    // Bloqueia entrada de letras
-      salaryInput.addEventListener('keydown', function(e) {
-          const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
-          if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
-              e.preventDefault();
-          }
-      });
-
-    // Remove a máscara antes de enviar o formulário
-    salaryInput.closest('form').addEventListener('submit', function() {
-        let value = salaryInput.value.replace('R$ ', '').replace(/\./g, '').replace(',', '.');
-        salaryInput.value = value;
-    });
-
-    // Máscara nos campos de orçamento
-document.querySelectorAll('.budget-input').forEach(function(input) {
-    input.addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        value = (parseInt(value) / 100).toFixed(2);
-        this.value = 'R$ ' + value.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    });
-
-    input.addEventListener('keydown', function(e) {
-        const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
-        if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
-            e.preventDefault();
-        }
-    });
-});
-
-// Remove máscara antes de enviar
-document.querySelector('form[action=""]').addEventListener('submit', function() {
-    document.querySelectorAll('.budget-input').forEach(function(input) {
-        let value = input.value.replace('R$ ', '').replace(/\./g, '').replace(',', '.');
-        input.value = value;
-    });
-});
-</script>
-<script>
-    function openSidebar() {
-        document.querySelector('.sidebar').classList.add('open');
-        document.getElementById('overlay').classList.add('active');
-    }
-
-    function closeSidebar() {
-        document.querySelector('.sidebar').classList.remove('open');
-        document.getElementById('overlay').classList.remove('active');
-    }
-</script>
-</body>
-</html>
+    <script src="../assets/js/settings.js"></script>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

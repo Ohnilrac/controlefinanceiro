@@ -10,65 +10,11 @@
  *  - $categories, $expenses, $action_error, $action_success, $edit_expense
  */
 require_once __DIR__ . '/expenses.logic.php';
+
+$page_title  = 'Meus Gastos';
+$active_page = 'expenses';
+include __DIR__ . '/../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meus Gastos - Controle Financeiro</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-</head>
-<body class="dashboard-page">
-
-<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
-<div class="topbar">
-    <button class="hamburger" onclick="openSidebar()">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-</div>
-
-<div class="content-wrapper">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <span class="logo-icon">💰</span>
-            <span class="logo-text">Controle<br>Financeiro</span>
-        </div>
-
-        <nav class="sidebar-nav">
-            <a href="dashboard.php" class="nav-item">
-                <span class="nav-icon">🏠</span>
-                <span>Dashboard</span>
-            </a>
-            <a href="expenses.php" class="nav-item active">
-                <span class="nav-icon">📋</span>
-                <span>Meus Gastos</span>
-            </a>
-            <a href="categories.php" class="nav-item">
-                <span class="nav-icon">🏷️</span>
-                <span>Categorias</span>
-            </a>
-
-            <div class="nav-divider"></div>
-
-            <a href="settings.php" class="nav-item">
-                <span class="nav-icon">⚙️</span>
-                <span>Configurações</span>
-            </a>
-        </nav>
-
-        <a href="logout.php" class="sidebar-logout">
-            <span>🚪</span>
-            <span>Sair</span>
-        </a>
-    </aside>
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="main-content">
 
         <div class="page-header">
             <div>
@@ -207,7 +153,7 @@ require_once __DIR__ . '/expenses.logic.php';
 
                     <div class="form-group">
                         <label>Valor (R$)</label>
-                        <input type="text" name="amount" id="amountInput" inputmode="numeric" placeholder="R$0,00" value="<?php echo $edit_expense ? 'R$ ' . number_format($edit_expense['amount'], 2, ',', '.') : 'R$ 0,00' ?>">
+                        <input type="text" name="amount" id="amountInput" class="money-input" inputmode="numeric" placeholder="R$0,00" value="<?php echo $edit_expense ? 'R$ ' . number_format($edit_expense['amount'], 2, ',', '.') : 'R$ 0,00' ?>">
                     </div>
                 </div>
 
@@ -234,65 +180,9 @@ require_once __DIR__ . '/expenses.logic.php';
         </div>
     </div>
 
+    <!-- Flag passada do PHP para o JS (indica se o modal abre em modo edicao) -->
     <script>
-        const modalOverlay = document.getElementById('modalOverlay');
-
-        function openModal() {
-            modalOverlay.classList.add('active');
-        }
-
-        function closeModal(event) {
-            if (!event || event.target === modalOverlay) {
-                modalOverlay.classList.remove('active');
-
-                // limpar o parametro de url se a pessoa saiu do modal de edição sem fazer nada
-                const url = new URL(window.location);
-                url.searchParams.delete('edit');
-                window.history.replaceState({}, '', url);
-
-                // limpar campos do modal
-                document.querySelector('.modal form').reset();
-                document.querySelector('input[name="expense_id"]') && document.querySelector('input[name="expense_id"]').remove();
-                document.querySelector('.modal h2').textContent = 'Adicionar Gasto';
-                amountInput.value = '';
-            }
-        }
-
-        // Abre o modal automaticamente se estiver em modo de edição
-        <?php if ($edit_expense): ?>
-            openModal();
-        <?php endif; ?>
-
-        const amountInput = document.getElementById('amountInput');
-
-amountInput.addEventListener('input', function() {
-    let value = this.value.replace(/\D/g, '');
-    value = (parseInt(value) / 100).toFixed(2);
-    this.value = 'R$ ' + value.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-});
-
-amountInput.addEventListener('keydown', function(e) {
-    const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
-    if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
-        e.preventDefault();
-    }
-});
-
-amountInput.closest('form').addEventListener('submit', function() {
-    let value = amountInput.value.replace('R$ ', '').replace(/\./g, '').replace(',', '.');
-    amountInput.value = value;
-});
+        const EXPENSE_EDIT_MODE = <?php echo $edit_expense ? 'true' : 'false'; ?>;
     </script>
-<script>
-    function openSidebar() {
-        document.querySelector('.sidebar').classList.add('open');
-        document.getElementById('overlay').classList.add('active');
-    }
-
-    function closeSidebar() {
-        document.querySelector('.sidebar').classList.remove('open');
-        document.getElementById('overlay').classList.remove('active');
-    }
-</script>
-</body>
-</html>
+    <script src="../assets/js/expenses.js"></script>
+<?php include __DIR__ . '/../includes/footer.php'; ?>
