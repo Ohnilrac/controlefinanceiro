@@ -1,92 +1,17 @@
 <?php
-session_start();
-require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/db.php';
-
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit();
-}
-
-$user_id = $_SESSION['user_id'];
-$action_error = '';
-$action_success = '';
-
-// DELETAR
-if (isset($_GET['delete'])) {
-    $category_id = $_GET['delete'];
-    
-    // Verifica se tem gastos vinculados
-    $stmt = $pdo->prepare('SELECT COUNT(*) as total FROM expenses WHERE category_id = :category_id AND user_id = :user_id');
-    $stmt->execute([':category_id' => $category_id, ':user_id' => $user_id]);
-    $count = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
-    
-    if ($count > 0) {
-        $action_error = 'Não é possível excluir uma categoria com gastos vinculados.';
-    } else {
-        $stmt = $pdo->prepare('DELETE FROM categories WHERE id = :id AND user_id = :user_id');
-        $stmt->execute([':id' => $category_id, ':user_id' => $user_id]);
-        header('Location: categories.php');
-        exit();
-    }
-}
-
-// ADICIONAR / EDITAR
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $color = trim($_POST['color'] ?? '#7C3AED');
-    $icon = trim($_POST['icon'] ?? '💰');
-
-    if (empty($name)) {
-        $action_error = 'Por favor, informe o nome da categoria.';
-    } else {
-        if (!empty($_POST['category_id'])) {
-            // Editar categoria
-            $stmt = $pdo->prepare('UPDATE categories SET name = :name, color = :color, icon = :icon WHERE id = :id AND user_id = :user_id');
-            $stmt->execute([
-                ':name' => $name,
-                ':color' => $color,
-                ':icon' => $icon,
-                ':id' => $_POST['category_id'],
-                ':user_id' => $user_id
-            ]);
-            $action_success = 'Categoria atualizada com sucesso!';
-        } else {
-            // Adicionar categoria
-            $stmt = $pdo->prepare('INSERT INTO categories (user_id, name, color, icon) VALUES (:user_id, :name, :color, :icon)');
-            $stmt->execute([
-                ':user_id' => $user_id,
-                ':name' => $name,
-                ':color' => $color,
-                ':icon' => $icon
-            ]);
-            $action_success = 'Categoria adicionada com sucesso!';
-        }
-        header('Location: categories.php');
-        exit();
-    }
-}
-
-// Busca todas as categorias do usuário
-$stmt = $pdo->prepare('
-    SELECT c.*, COUNT(e.id) as total_expenses, COALESCE(SUM(e.amount), 0) as total_spent
-    FROM categories c
-    LEFT JOIN expenses e ON c.id = e.category_id
-    WHERE c.user_id = :user_id
-    GROUP BY c.id
-    ORDER BY c.name
-');
-$stmt->execute([':user_id' => $user_id]);
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Busca categoria para edição
-$edit_category = null;
-if (isset($_GET['edit'])) {
-    $stmt = $pdo->prepare('SELECT * FROM categories WHERE id = :id AND user_id = :user_id');
-    $stmt->execute([':id' => $_GET['edit'], ':user_id' => $user_id]);
-    $edit_category = $stmt->fetch(PDO::FETCH_ASSOC);
-}
+/**
+ * categories.php (view)
+ *
+ * Camada de apresentação da página de categorias.
+ * Toda a lógica está em categories.logic.php.
+ *
+ * Variáveis disponíveis na view:
+ *  - $action_error, $action_success
+ *  - $categories (array)
+ *  - $edit_category (array|null)
+ */
+require_once __DIR__ . '/categories.logic.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
