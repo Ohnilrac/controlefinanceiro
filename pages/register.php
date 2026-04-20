@@ -1,73 +1,17 @@
-<?php 
-session_start();
-require_once __DIR__ . '/../includes/db.php';
-
-
-//isset é uma função que verifica se a variável existe e não é nula
-if (isset($_SESSION['user_id'])) {     
-    header('Location: dashboard.php');
-    exit();
-}
-
-$error = '';
-$success = '';
-$error_fields = [];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  //trim é uma função que remove os espaços em branco do início e do final de uma string
-  $full_name = trim($_POST['full_name']);
-  $email = trim($_POST['email']);
-  $username = trim($_POST['username']);
-  $password = trim($_POST['password']);
-  $confirm_password = trim($_POST['confirm_password']);
-
-  if (empty($full_name) || empty($email) || empty($username) || empty($password) || empty($confirm_password)) {
-    $error = 'Por favor, preencha todos os campos.';
-  } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    //filter_var é uma função que filtra uma variável com um filtro específico, neste caso, valida se o email é válido
-    $error = 'Por favor, insira um email válido.';
-  } elseif ($password !== $confirm_password) {
-    $error = 'As senhas não coincidem.';
-  } else {
-    $stmt = $pdo->prepare('SELECT * FROM users WHERE email = :email OR username = :username');
-    $stmt->execute([':email' => $email, ':username' => $username]);
-    $existing = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($existing) {
-        // Verifica qual campo está duplicado
-        $stmt_email = $pdo->prepare('SELECT id FROM users WHERE email = :email');
-        $stmt_email->execute([':email' => $email]);
-        $stmt_username = $pdo->prepare('SELECT id FROM users WHERE username = :username');
-        $stmt_username->execute([':username' => $username]);
-        
-        $email_exists = $stmt_email->fetch();
-        $username_exists = $stmt_username->fetch();
-        
-        if ($email_exists && $username_exists) {
-            $error = 'Email e nome de usuário já estão em uso.';
-            $error_fields = ['email', 'username'];
-        } elseif ($email_exists) {
-            $error = 'Este email já está em uso.';
-            $error_fields = ['email'];
-        } else {
-            $error = 'Este nome de usuário já está em uso.';
-            $error_fields = ['username'];
-        }
-    } else {
-      // PASSWORD_DEFAULT é uma constante que indica o algoritmo de hash a ser usado, atualmente é o bcrypt, e pode ser atualizado no futuro para um algoritmo mais forte sem precisar alterar o código
-      $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-      $stmt = $pdo->prepare('INSERT INTO users (full_name, email, username, password) VALUES (:full_name, :email, :username, :password)');
-      if ($stmt->execute([':full_name' => $full_name, ':email' => $email, ':username' => $username, ':password' => $hashed_password])) {
-        $success = 'Registro bem-sucedido! Você pode fazer login agora.';
-      } else {
-        $error = 'Ocorreu um erro ao registrar. Por favor, tente novamente.';
-      }
-    }
-  }
-}
-
-
+<?php
+/**
+ * register.php (view)
+ *
+ * Camada de apresentação da página de cadastro.
+ * Toda a lógica (sessão, validação, banco) está em register.logic.php.
+ *
+ * Variáveis disponíveis para uso na view:
+ *  - $error (string): erro de validação ou sistema
+ *  - $success (string): mensagem de sucesso após cadastro
+ *  - $error_fields (array): nomes dos campos a destacar como erro
+ */
+require_once __DIR__ . '/register.logic.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
