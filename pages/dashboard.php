@@ -1,54 +1,16 @@
-<?php 
-ini_set('display_errors', 1);
-
-session_start();
-require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/db.php';
-
-
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit();
-}
-
-$user_id = $_SESSION['user_id'];
-
-$stmt = $pdo->prepare('SELECT * FROM users WHERE id = :id');
-$stmt->execute([':id' => $user_id]);
-//PDO::FETCH_ASSOC é um modo de busca que retorna os resultados como um array associativo, onde as chaves do array correspondem aos nomes das colunas do banco de dados. Isso permite acessar os valores usando os nomes das colunas em vez de índices numéricos.
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-//Mes e atual e ano atual para calcular o total gasto no mês
-$month = date('m');
-$year = date('Y');
-
-//Consulta para calcular o total gasto no mês atual
-$stmt = $pdo->prepare('SELECT SUM(amount) AS total FROM expenses WHERE user_id = :user_id AND MONTH(date) = :month AND YEAR(date) = :year');
-$stmt->execute([':user_id' => $user_id, ':month' => $month, ':year' => $year]);
-$total_spent = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
-
-//Calcula o saldo restante
-$remaining = $user['salary'] - $total_spent;
-
-//porcentagem do salário gasto
-$percentage = $user['salary'] > 0 ? ($total_spent / $user['salary']) * 100 : 0;
-
-// Gasto por categoria no mes
-$stmt = $pdo->prepare('SELECT c.name, c.color, c.icon, SUM(e.amount) AS total FROM expenses e JOIN categories c ON e.category_id = c.id WHERE e.user_id = :user_id AND MONTH(e.date) = :month AND YEAR(e.date) = :year GROUP BY c.id, c.name, c.color, c.icon ORDER BY total DESC');
-$stmt->execute([':user_id' => $user_id, ':month' => $month, ':year' => $year]);
-$expenses_by_category = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-//ultimas 5 despesas
-$stmt = $pdo->prepare('SELECT e.*, c.name as category_name, c.color, c.icon FROM expenses e JOIN categories c ON e.category_id = c.id WHERE e.user_id = :user_id ORDER BY e.date DESC, e.created_at DESC LIMIT 5');
-$stmt->execute([':user_id' => $user_id]);
-$recent_transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-//evolução ultimos 6 meses
-$stmt = $pdo->prepare('SELECT MONTH(date) AS month, YEAR(date) AS year, SUM(amount) AS total FROM expenses WHERE user_id = :user_id AND date >= DATE_SUB(NOW(), INTERVAL 6 MONTH) GROUP BY YEAR(date), MONTH(date) ORDER BY YEAR(date), MONTH(date)'); 
-$stmt->execute([':user_id' => $user_id]);
-$monthly_evolution = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+<?php
+/**
+ * dashboard.php (view)
+ *
+ * Camada de apresentação do dashboard.
+ * Toda a lógica está em dashboard.logic.php.
+ *
+ * Variáveis disponíveis na view:
+ *  - $user, $total_spent, $remaining, $percentage,
+ *    $expenses_by_category, $recent_transactions, $monthly_evolution
+ */
+require_once __DIR__ . '/dashboard.logic.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
