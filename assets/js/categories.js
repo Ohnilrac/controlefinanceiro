@@ -1,35 +1,42 @@
 /**
  * categories.js
  *
- * Comportamentos da pagina "Categorias":
- *  - Modal de adicionar/editar categoria (abrir/fechar)
- *  - Seletor de emoji (preenche o input oculto ao clicar em um emoji)
+ * Comportamento específico do modal de categorias e do seletor de emoji.
  *
- * Depende de:
- *  - Flag global CATEGORY_EDIT_MODE (boolean) definida pela view para indicar
- *    se o modal deve abrir automaticamente em modo de edicao.
+ * openModal() e closeModalOverlay() vêm de modal.js,
+ * carregado globalmente pelo header.php.
  */
 
-const modalOverlay = document.getElementById('modalOverlay');
-
-function openModal() {
-    modalOverlay.classList.add('active');
-}
-
+/**
+ * Fecha o modal de categoria.
+ * Usa a lógica base do closeModalOverlay (sem limpeza adicional,
+ * pois o formulário de categoria não precisa de reset manual).
+ *
+ * @param {Event|undefined} event
+ */
 function closeModal(event) {
-    if (!event || event.target === modalOverlay) {
-        modalOverlay.classList.remove('active');
-    }
+    closeModalOverlay(event);
 }
 
+/**
+ * Marca o emoji clicado como selecionado e preenche o input oculto.
+ * O parâmetro "emoji" é passado via onclick no HTML.
+ *
+ * @param {string} emoji - O emoji escolhido pelo usuário
+ */
 function selectEmoji(emoji) {
+    // Preenche o input de ícone com o emoji selecionado
     document.getElementById('iconInput').value = emoji;
-    document.querySelectorAll('.emoji-option').forEach(el => el.classList.remove('selected'));
-    // "event" aqui vem do escopo global do handler onclick do <span>
+
+    // Remove o destaque de todos os emojis e aplica apenas no clicado
+    document.querySelectorAll('.emoji-option').forEach(function(el) {
+        el.classList.remove('selected');
+    });
+    // "event" aqui vem do escopo global do handler onclick="selectEmoji(...)"
     event.target.classList.add('selected');
 }
 
-// Abre o modal automaticamente se a view indicou modo de edicao
+// Abre o modal automaticamente se a view indicou modo de edição
 if (typeof CATEGORY_EDIT_MODE !== 'undefined' && CATEGORY_EDIT_MODE) {
     openModal();
 }

@@ -1,44 +1,49 @@
 /**
  * expenses.js
  *
- * Comportamento do modal de adicionar/editar gasto na pagina "Meus Gastos".
+ * Comportamento específico do modal de adicionar/editar gasto.
  *
- * A mascara de R$ do campo "amount" e aplicada pelo money-mask.js (via classe
- * .money-input), carregado globalmente pelo footer.php.
+ * openModal() e closeModalOverlay() vêm de modal.js,
+ * carregado globalmente pelo header.php.
  *
- * Depende de:
- *  - Flag global EXPENSE_EDIT_MODE (boolean) definida pela view para indicar
- *    se o modal deve abrir automaticamente em modo de edicao.
+ * closeModal(event) é declarado aqui pois, além de fechar o overlay,
+ * precisa limpar o formulário e remover o parâmetro ?edit= da URL.
  */
 
-const modalOverlay = document.getElementById('modalOverlay');
-
-function openModal() {
-    modalOverlay.classList.add('active');
-}
-
+/**
+ * Fecha o modal e restaura o estado inicial do formulário.
+ * Chamado pelo botão X, pelo botão Cancelar e pelo clique no overlay.
+ *
+ * @param {Event|undefined} event
+ */
 function closeModal(event) {
-    // Fecha apenas se o clique foi no overlay (fora do modal) ou via botao X
-    if (!event || event.target === modalOverlay) {
-        modalOverlay.classList.remove('active');
+    // closeModalOverlay cuida de verificar se deve fechar e remove .active
+    if (closeModalOverlay(event)) {
 
-        // Limpa o parametro ?edit=... da URL (caso tenha entrado em modo edicao)
-        const url = new URL(window.location);
+        // Remove o parâmetro ?edit=... da URL para que um F5
+        // não reabra o modal de edição involuntariamente
+        var url = new URL(window.location);
         url.searchParams.delete('edit');
         window.history.replaceState({}, '', url);
 
-        // Reseta os campos do modal para um novo gasto
+        // Reseta todos os campos do formulário (nome, data, checkbox, textarea...)
         document.querySelector('.modal form').reset();
-        const expenseIdInput = document.querySelector('input[name="expense_id"]');
+
+        // Remove o input hidden de expense_id (presente só no modo edição)
+        var expenseIdInput = document.querySelector('input[name="expense_id"]');
         if (expenseIdInput) expenseIdInput.remove();
+
+        // Restaura o título do modal para o estado padrão
         document.querySelector('.modal h2').textContent = 'Adicionar Gasto';
 
-        const amountInput = document.getElementById('amountInput');
+        // Limpa o campo de valor (o .reset() pode deixar a máscara residual)
+        var amountInput = document.getElementById('amountInput');
         if (amountInput) amountInput.value = '';
     }
 }
 
-// Abre o modal automaticamente se a view indicou modo de edicao
+// Abre o modal automaticamente se a view indicou modo de edição
+// (usuário clicou em "Editar" e a página recarregou com ?edit=ID)
 if (typeof EXPENSE_EDIT_MODE !== 'undefined' && EXPENSE_EDIT_MODE) {
     openModal();
 }

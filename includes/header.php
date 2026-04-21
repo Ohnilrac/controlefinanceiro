@@ -26,6 +26,8 @@ $page_title = $page_title ?? 'Controle Financeiro';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($page_title); ?> - Controle Financeiro</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <!-- Utilitário de modal base (openModal / closeModalOverlay) -->
+    <script src="../assets/js/modal.js"></script>
 </head>
 <body class="dashboard-page">
 
