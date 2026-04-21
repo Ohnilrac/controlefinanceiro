@@ -57,10 +57,17 @@ $total_spent = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 $remaining  = $user['salary'] - $total_spent;
 $percentage = $user['salary'] > 0 ? ($total_spent / $user['salary']) * 100 : 0;
 
-// Gastos por categoria no mês atual (com nome, cor e ícone)
-$stmt = $pdo->prepare('SELECT c.name, c.color, c.icon, SUM(e.amount) AS total FROM expenses e JOIN categories c ON e.category_id = c.id WHERE e.user_id = :user_id AND MONTH(e.date) = :month AND YEAR(e.date) = :year GROUP BY c.id, c.name, c.color, c.icon ORDER BY total DESC');
+// Gastos por categoria no mês atual (com nome, cor, ícone e orçamento definido)
+// O campo budget é incluído para que a view possa exibir alertas de orçamento estourado
+$stmt = $pdo->prepare('SELECT c.name, c.color, c.icon, c.budget, SUM(e.amount) AS total FROM expenses e JOIN categories c ON e.category_id = c.id WHERE e.user_id = :user_id AND MONTH(e.date) = :month AND YEAR(e.date) = :year GROUP BY c.id, c.name, c.color, c.icon, c.budget ORDER BY total DESC');
 $stmt->execute([':user_id' => $user_id, ':month' => $month, ':year' => $year]);
 $expenses_by_category = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Filtra as categorias que têm orçamento definido (budget > 0) e que o total gasto
+// no mês ultrapassa esse orçamento. Esse array alimenta o bloco de alertas no dashboard.
+$over_budget_categories = array_filter($expenses_by_category, function($cat) {
+    return $cat['budget'] > 0 && $cat['total'] > $cat['budget'];
+});
 
 // Últimas 5 despesas (com dados da categoria via JOIN)
 $stmt = $pdo->prepare('SELECT e.*, c.name as category_name, c.color, c.icon FROM expenses e JOIN categories c ON e.category_id = c.id WHERE e.user_id = :user_id ORDER BY e.date DESC, e.created_at DESC LIMIT 5');

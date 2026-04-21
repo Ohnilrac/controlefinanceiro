@@ -409,6 +409,70 @@ body {
   color: #9090a0;
 }
 
+/* ===== BUDGET ALERT (Dashboard) ===== */
+.budget-alert-card {
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  background: linear-gradient(135deg, #1e1e2e 0%, rgba(220, 38, 38, 0.06) 100%);
+  margin-bottom: 24px;
+}
+
+.budget-alert-card .card-description {
+  font-size: 13px;
+  color: #9090a0;
+  margin-top: 4px;
+  margin-bottom: 16px;
+}
+
+.budget-alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.budget-alert-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.budget-alert-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.budget-alert-icon {
+  font-size: 18px;
+}
+
+.budget-alert-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #f5f5f5;
+}
+
+.budget-alert-values {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.budget-alert-spent {
+  font-size: 14px;
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.budget-alert-limit {
+  font-size: 12px;
+  color: #9090a0;
+}
+
 /* ===== GRID ===== */
 .grid-2 {
   display: grid;

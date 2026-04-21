@@ -65,6 +65,28 @@ include __DIR__ . '/../includes/header.php';
                 <p class="progress-info">R$ <?php echo number_format($total_spent, 2, ',', '.'); ?> de R$ <?php echo number_format($user['salary'], 2, ',', '.'); ?> utilizados</p>
             </div>
 
+            <!-- ALERTAS DE ORÇAMENTO ESTOURADO -->
+            <?php if (!empty($over_budget_categories)): ?>
+                <div class="card budget-alert-card">
+                    <h2 class="card-title">⚠️ Orçamento Estourado</h2>
+                    <p class="card-description">As categorias abaixo ultrapassaram o limite definido este mês.</p>
+                    <div class="budget-alert-list">
+                        <?php foreach ($over_budget_categories as $cat): ?>
+                            <div class="budget-alert-item">
+                                <div class="budget-alert-info">
+                                    <span class="budget-alert-icon"><?php echo $cat['icon']; ?></span>
+                                    <span class="budget-alert-name"><?php echo htmlspecialchars($cat['name']); ?></span>
+                                </div>
+                                <div class="budget-alert-values">
+                                    <span class="budget-alert-spent">R$ <?php echo number_format($cat['total'], 2, ',', '.'); ?></span>
+                                    <span class="budget-alert-limit">limite: R$ <?php echo number_format($cat['budget'], 2, ',', '.'); ?></span>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+
             <!-- GRÁFICO E CATEGORIAS -->
             <div class="grid-2">
 
