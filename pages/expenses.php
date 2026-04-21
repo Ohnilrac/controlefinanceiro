@@ -115,6 +115,71 @@ include __DIR__ . '/../includes/header.php';
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+
+                <!-- PAGINAÇÃO -->
+                <?php if ($total_pages > 1):
+                    // Monta a base da URL preservando todos os filtros ativos.
+                    // array_filter remove entradas vazias para não poluir a URL.
+                    $pagination_base = '?' . http_build_query(array_filter([
+                        'search'   => $search,
+                        'category' => $filter_category,
+                        'month'    => $filter_month,
+                        'year'     => $filter_year,
+                    ]));
+                    // Se já há parâmetros, o separador é &; senão, é nada (append direto)
+                    $sep = strpos($pagination_base, '=') !== false ? '&' : '';
+                ?>
+                    <div class="pagination">
+
+                        <!-- Botão Anterior -->
+                        <?php if ($current_page > 1): ?>
+                            <a href="<?php echo $pagination_base . $sep; ?>page=<?php echo $current_page - 1; ?>" class="pagination-btn">← Anterior</a>
+                        <?php else: ?>
+                            <span class="pagination-btn pagination-disabled">← Anterior</span>
+                        <?php endif; ?>
+
+                        <!-- Números de página (exibe até 5, com reticências) -->
+                        <?php
+                        // Define a janela de páginas a exibir ao redor da atual
+                        $window    = 2; // páginas antes e depois da atual
+                        $page_from = max(1, $current_page - $window);
+                        $page_to   = min($total_pages, $current_page + $window);
+
+                        if ($page_from > 1): ?>
+                            <a href="<?php echo $pagination_base . $sep; ?>page=1" class="pagination-btn">1</a>
+                            <?php if ($page_from > 2): ?>
+                                <span class="pagination-ellipsis">…</span>
+                            <?php endif; ?>
+                        <?php endif; ?>
+
+                        <?php for ($p = $page_from; $p <= $page_to; $p++): ?>
+                            <?php if ($p === $current_page): ?>
+                                <span class="pagination-btn pagination-active"><?php echo $p; ?></span>
+                            <?php else: ?>
+                                <a href="<?php echo $pagination_base . $sep; ?>page=<?php echo $p; ?>" class="pagination-btn"><?php echo $p; ?></a>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+
+                        <?php if ($page_to < $total_pages): ?>
+                            <?php if ($page_to < $total_pages - 1): ?>
+                                <span class="pagination-ellipsis">…</span>
+                            <?php endif; ?>
+                            <a href="<?php echo $pagination_base . $sep; ?>page=<?php echo $total_pages; ?>" class="pagination-btn"><?php echo $total_pages; ?></a>
+                        <?php endif; ?>
+
+                        <!-- Botão Próximo -->
+                        <?php if ($current_page < $total_pages): ?>
+                            <a href="<?php echo $pagination_base . $sep; ?>page=<?php echo $current_page + 1; ?>" class="pagination-btn">Próximo →</a>
+                        <?php else: ?>
+                            <span class="pagination-btn pagination-disabled">Próximo →</span>
+                        <?php endif; ?>
+
+                    </div>
+                    <p class="pagination-info">
+                        Exibindo <?php echo (($current_page - 1) * $per_page) + 1; ?>–<?php echo min($current_page * $per_page, $total_records); ?> de <?php echo $total_records; ?> gastos
+                    </p>
+                <?php endif; ?>
+
             <?php endif; ?>
         </div>
 

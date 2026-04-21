@@ -18,7 +18,11 @@
  *  - $min_year (int): ano mínimo para o filtro de ano
  *  - $filter_category, $filter_month, $filter_year, $search (filtros atuais)
  *  - $categories (array): categorias do usuário (para selects)
- *  - $expenses (array): gastos filtrados
+ *  - $expenses (array): gastos da página atual
+ *  - $total_records (int): total de gastos com os filtros aplicados
+ *  - $total_pages (int): total de páginas
+ *  - $current_page (int): página sendo exibida
+ *  - $per_page (int): gastos por página
  *  - $action_error, $action_success (string)
  *  - $edit_expense (array|null): despesa carregada para edição, se aplicável
  */
@@ -53,31 +57,52 @@ $stmt = $pdo->prepare('SELECT * FROM categories WHERE user_id = :user_id ORDER B
 $stmt->execute([':user_id' => $user_id]);
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Monta a query dinamicamente conforme os filtros aplicados.
+// Monta a cláusula WHERE dinamicamente conforme os filtros aplicados.
+// Separar o WHERE numa variável permite reutilizá-lo na query de contagem
+// (COUNT) e na query principal (SELECT), evitando duplicação de lógica.
 // Usar prepared statements + bindings evita SQL Injection mesmo
 // quando o SQL é construído por concatenação.
-$sql    = 'SELECT e.*, c.name AS category_name, c.color, c.icon FROM expenses e LEFT JOIN categories c ON e.category_id = c.id WHERE e.user_id = :user_id';
+$where  = 'WHERE e.user_id = :user_id';
 $params = [':user_id' => $user_id];
 
 if (!empty($filter_category)) {
-    $sql .= ' AND e.category_id = :category_id';
+    $where .= ' AND e.category_id = :category_id';
     $params[':category_id'] = $filter_category;
 }
 if (!empty($filter_month) && !empty($filter_year)) {
-    $sql .= ' AND MONTH(e.date) = :month AND YEAR(e.date) = :year';
+    $where .= ' AND MONTH(e.date) = :month AND YEAR(e.date) = :year';
     $params[':month'] = $filter_month;
     $params[':year']  = $filter_year;
 }
-
 if (!empty($search)) {
-    $sql .= ' AND e.name LIKE :search)';
+    $where .= ' AND e.name LIKE :search';
     $params[':search'] = '%' . $search . '%';
 }
 
-$sql .= ' ORDER BY e.date DESC, e.created_at DESC';
-
-$stmt = $pdo->prepare($sql);
+// Conta o total de registros com os filtros aplicados.
+// Esse número é necessário para calcular quantas páginas existem.
+$stmt = $pdo->prepare('SELECT COUNT(*) FROM expenses e LEFT JOIN categories c ON e.category_id = c.id ' . $where);
 $stmt->execute($params);
+$total_records = (int) $stmt->fetchColumn();
+
+// Configuração da paginação
+$per_page    = 15;                                          // gastos por página
+$current_page = max(1, intval($_GET['page'] ?? 1));          // página atual (mínimo 1)
+$total_pages  = $total_records > 0 ? (int) ceil($total_records / $per_page) : 1;
+$current_page = min($current_page, $total_pages);           // não ultrapassa o total
+$offset       = ($current_page - 1) * $per_page;           // ponto de início no banco
+
+// Busca os gastos da página atual com LIMIT e OFFSET.
+// LIMIT/OFFSET precisam ser vinculados como inteiros (PDO::PARAM_INT)
+// pois o MySQL não aceita valores entre aspas nessas posições.
+$sql  = 'SELECT e.*, c.name AS category_name, c.color, c.icon FROM expenses e LEFT JOIN categories c ON e.category_id = c.id ' . $where . ' ORDER BY e.date DESC, e.created_at DESC LIMIT :limit OFFSET :offset';
+$stmt = $pdo->prepare($sql);
+foreach ($params as $key => $value) {
+    $stmt->bindValue($key, $value);
+}
+$stmt->bindValue(':limit',  $per_page, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset,   PDO::PARAM_INT);
+$stmt->execute();
 $expenses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Mensagens de feedback para a view

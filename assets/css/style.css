@@ -409,6 +409,79 @@ body {
   color: #9090a0;
 }
 
+/* ===== COMPARATIVO MÊS ANTERIOR (Dashboard) ===== */
+.card-comparison {
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.comparison-up {
+  color: #dc2626; /* gastou mais = ruim = vermelho */
+}
+
+.comparison-down {
+  color: #10b981; /* gastou menos = bom = verde */
+}
+
+/* ===== PAGINAÇÃO (Expenses) ===== */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #2e2e4e;
+}
+
+.pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f5f5f5;
+  background: #2e2e4e;
+  border: 1px solid #3e3e5e;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.pagination-btn:hover:not(.pagination-disabled):not(.pagination-active) {
+  background: #7c3aed;
+  border-color: #7c3aed;
+}
+
+.pagination-active {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  cursor: default;
+}
+
+.pagination-disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pagination-ellipsis {
+  color: #9090a0;
+  font-size: 14px;
+  padding: 0 4px;
+}
+
+.pagination-info {
+  text-align: center;
+  font-size: 13px;
+  color: #9090a0;
+  margin-top: 10px;
+}
+
 /* ===== BUDGET ALERT (Dashboard) ===== */
 .budget-alert-card {
   border: 1px solid rgba(220, 38, 38, 0.35);
