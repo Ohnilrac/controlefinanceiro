@@ -39,6 +39,13 @@ include __DIR__ . '/../includes/header.php';
                     <div class="card-info">
                         <p class="card-label">Total Gasto</p>
                         <p class="card-value">R$ <?php echo number_format($total_spent, 2, ',', '.'); ?></p>
+                        <?php if ($spent_diff !== null): ?>
+                            <p class="card-comparison <?php echo $spent_diff > 0 ? 'comparison-up' : 'comparison-down'; ?>">
+                                <?php echo $spent_diff > 0 ? '▲' : '▼'; ?>
+                                R$ <?php echo number_format(abs($spent_diff), 2, ',', '.'); ?>
+                                vs mês anterior
+                            </p>
+                        <?php endif; ?>
                     </div>
                 </div>
 

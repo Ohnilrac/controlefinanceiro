@@ -53,6 +53,16 @@ $stmt->execute([':user_id' => $user_id, ':month' => $month, ':year' => $year]);
 // O ?? 0 protege contra NULL caso não haja gastos no mês
 $total_spent = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 
+// Total gasto no mês anterior (para o comparativo no card "Total Gasto")
+// DATE_FORMAT + DATE_SUB calcula o mês passado sem precisar tratar virada de ano
+$stmt = $pdo->prepare('SELECT SUM(amount) AS total FROM expenses WHERE user_id = :user_id AND MONTH(date) = MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND YEAR(date) = YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH))');
+$stmt->execute([':user_id' => $user_id]);
+$last_month_spent = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? null;
+
+// Diferença em relação ao mês anterior (null = sem dados para comparar)
+// $spent_diff > 0 = gastou mais; < 0 = gastou menos
+$spent_diff = ($last_month_spent !== null) ? $total_spent - $last_month_spent : null;
+
 // Saldo restante e percentual do salário consumido
 $remaining  = $user['salary'] - $total_spent;
 $percentage = $user['salary'] > 0 ? ($total_spent / $user['salary']) * 100 : 0;
